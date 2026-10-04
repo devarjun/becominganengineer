@@ -8,6 +8,8 @@ No dependencies, just Python 3. Run from this folder:
     python3 build.py docs       # builds into docs/ (for GitHub Pages)
 
 Reads posts/*.md and about.md, writes the finished site to the output folder.
+landing.html is copied as-is to become the homepage (index.html); the post
+listing is written to blog.html.
 """
 
 import html
@@ -275,6 +277,7 @@ def base(title, body, description="", prefix=""):
 <a class="site-title" href="{prefix}index.html">{SITE_TITLE}</a>
 <nav>
 <a href="{prefix}index.html">Home</a>
+<a href="{prefix}blog.html">Blog</a>
 <a href="{prefix}about.html">About</a>
 <a href="{prefix}feed.xml">RSS</a>
 </nav>
@@ -332,7 +335,13 @@ def main():
         posts.append(parse_post(path))
     posts.sort(key=lambda p: p["dt"], reverse=True)
 
-    # Home page: newest posts first.
+    # Landing page: Arjun's custom homepage, copied as-is.
+    landing = ROOT / "landing.html"
+    if not landing.exists():
+        raise SystemExit("Error: landing.html is missing. It is the site's homepage.")
+    shutil.copy(landing, out / "index.html")
+
+    # Blog page: newest posts first.
     items = []
     for p in posts:
         badge = ' <span class="badge">Placeholder</span>' if p["placeholder"] else ""
@@ -343,11 +352,12 @@ def main():
             f"<p>{html.escape(p['excerpt'])}</p>\n"
             "</article>"
         )
-    index_body = (
+    blog_body = (
+        "<h1>Blog</h1>\n"
         f'<p class="tagline">{html.escape(SITE_TAGLINE)}</p>\n'
         '<section class="post-list">\n' + "\n".join(items) + "\n</section>"
     )
-    (out / "index.html").write_text(base("Home", index_body), encoding="utf-8")
+    (out / "blog.html").write_text(base("Blog", blog_body), encoding="utf-8")
 
     # Individual post pages.
     for p in posts:
@@ -356,12 +366,12 @@ def main():
             if p["placeholder"] else ""
         )
         body = (
-            '<p><a href="../index.html">&larr; All posts</a></p>\n'
+            '<p><a href="../blog.html">&larr; All posts</a></p>\n'
             '<article class="post">\n'
             f"<h1>{html.escape(p['title'])}</h1>\n"
             f"<time datetime=\"{p['date_str']}\">{p['date_human']}</time>\n"
             + badge_block + p["html"] + "\n</article>\n"
-            '<p><a href="../index.html">&larr; All posts</a></p>'
+            '<p><a href="../blog.html">&larr; All posts</a></p>'
         )
         (out / "posts" / f"{p['slug']}.html").write_text(
             base(p["title"], body, description=p["excerpt"], prefix="../"),
