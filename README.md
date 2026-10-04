@@ -9,12 +9,14 @@ you can host for free.
 ```
 becominganengineer/
   build.py          The build script. Reads Markdown, writes the site.
-  style.css         The site's stylesheet (copied into public/ on build).
+  style.css         The blog stylesheet (copied into docs/ on build).
+  landing.html      Your custom homepage. Copied as-is to become index.html.
   about.md          Source for the About page. Edit this to write your bio.
   posts/            Your blog posts, one Markdown file per post.
     hello-world.md  Placeholder first post. Replace or delete it.
-  public/           The finished site. This is what you deploy.
-    index.html      Home page, newest posts first.
+  docs/             The finished site. This is what GitHub Pages serves.
+    index.html      Homepage (your landing page).
+    blog.html       Post listing, newest posts first.
     about.html      About page.
     feed.xml        RSS feed.
     404.html        Shown for missing pages.
@@ -24,9 +26,10 @@ becominganengineer/
   README.md         This file.
 ```
 
-You only ever edit the Markdown files, `style.css`, and `build.py` (rarely).
-The `public/` folder is generated. If you ever want a clean rebuild, just run
-`python3 build.py` again, it wipes `public/` and starts fresh.
+You only ever edit the Markdown files, `landing.html`, `style.css`, and
+`build.py` (rarely). The `docs/` folder is generated. If you ever want a
+clean rebuild, just run `python3 build.py docs` again, it wipes `docs/`
+and starts fresh.
 
 ## Writing and publishing a new post
 
